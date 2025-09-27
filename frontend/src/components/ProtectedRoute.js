@@ -23,21 +23,17 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated || !user) {
-    console.log('ProtectedRoute: Not authenticated, redirecting to login');
-    // Determine which login page to redirect to based on the required role
-    let loginPath = '/loginadmin';
-    if (requiredRole === 'sho') {
-      loginPath = '/loginsho';
-    } else if (requiredRole === 'student') {
-      loginPath = '/loginstudent';
-    }
-    
-    return <Navigate to={loginPath} state={{ from: location }} replace />;
+    console.log('ProtectedRoute: Not authenticated, redirecting to unified login');
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Check role-based access
   if (requiredRole && user.role !== requiredRole) {
-    console.log('ProtectedRoute: Role mismatch, redirecting to unauthorized');
+    console.log('ProtectedRoute: Role mismatch', { 
+      userRole: user.role, 
+      requiredRole, 
+      user: user 
+    });
     return <Navigate to="/unauthorized" replace />;
   }
 

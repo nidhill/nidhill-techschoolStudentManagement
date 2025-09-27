@@ -61,6 +61,18 @@ class UserRepository {
   static async findByRoleWithPassword(role) {
     return await User.find({ role });
   }
+
+  // New methods for SHO functionality
+  static async findByAssignedSho(shoId) {
+    return await User.find({ 
+      role: 'student', 
+      assignedSho: shoId 
+    }).select('-password').sort({ createdAt: -1 });
+  }
+
+  static async findByRegisterNumber(registerNumber) {
+    return await User.findOne({ registerNumber });
+  }
 }
 
 module.exports = UserRepository;

@@ -16,31 +16,26 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Initialize authentication state from localStorage
+  // Initialize authentication state from localStorage (persist session across refresh)
   useEffect(() => {
     const initializeAuth = () => {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
-      
+
       if (token && userData) {
         try {
           const parsedUser = JSON.parse(userData);
-          
-          // Set user immediately for better UX
           setUser(parsedUser);
           setIsAuthenticated(true);
-        } catch (error) {
-          console.log('Error parsing user data:', error);
+        } catch (err) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setUser(null);
           setIsAuthenticated(false);
         }
       }
-      
       setLoading(false);
     };
-
     initializeAuth();
   }, []);
 
@@ -84,6 +79,23 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
+  const updateProfile = (updates) => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        const updatedUser = { ...parsedUser, ...updates };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        return true;
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        return false;
+      }
+    }
+    return false;
+  };
+
   const refreshAuth = () => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
@@ -108,7 +120,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     loading,
     isAuthenticated,
-    refreshAuth
+    refreshAuth,
+    updateProfile
   };
 
   return (

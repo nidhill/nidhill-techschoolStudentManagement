@@ -34,5 +34,16 @@ const adminAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { auth, adminAuth };
+const shoAuth = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'sho') {
+      return res.status(403).json({ message: 'Access denied. SHO role required.' });
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { auth, adminAuth, shoAuth };
 

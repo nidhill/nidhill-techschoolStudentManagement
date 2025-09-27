@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: function() {
-      return this.role === 'sho';
+      return this.role === 'sho' || this.role === 'student';
     },
     unique: true,
     lowercase: true,
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
   mobileNumber: {
     type: String,
     required: function() {
-      return this.role === 'sho';
+      return this.role === 'sho' || this.role === 'student';
     },
     trim: true,
     match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit mobile number']
@@ -71,6 +71,354 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  
+  // Password reset fields
+  passwordResetToken: {
+    type: String,
+    default: undefined
+  },
+  passwordResetExpires: {
+    type: Date,
+    default: undefined
+  },
+  
+  // Email verification fields
+  emailVerificationToken: {
+    type: String,
+    default: undefined
+  },
+  emailVerificationExpires: {
+    type: Date,
+    default: undefined
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  pendingEmail: {
+    type: String,
+    default: undefined
+  },
+  
+  // Student-specific fields
+  assignedSho: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: function() {
+      return this.role === 'student';
+    }
+  },
+  
+  // Personal details
+  domain: {
+    type: String,
+    trim: true
+  },
+  dateOfBirth: {
+    type: Date
+  },
+  age: {
+    type: Number
+  },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female'],
+    trim: true
+  },
+  
+  // Parent Details
+  parentDetails: {
+    fatherName: {
+      type: String,
+      trim: true
+    },
+    fatherContact: {
+      type: String,
+      trim: true,
+      match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit mobile number']
+    },
+    motherName: {
+      type: String,
+      trim: true
+    },
+    motherContact: {
+      type: String,
+      trim: true,
+      match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit mobile number']
+    }
+  },
+  
+  // Guardian Details
+  guardianDetails: {
+    guardianName: {
+      type: String,
+      trim: true
+    },
+    guardianRelationship: {
+      type: String,
+      trim: true
+    },
+    guardianContact: {
+      type: String,
+      trim: true,
+      match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit mobile number']
+    }
+  },
+  
+  // Address Details
+  address: {
+    houseNo: {
+      type: String,
+      trim: true
+    },
+    postOffice: {
+      type: String,
+      trim: true
+    },
+    district: {
+      type: String,
+      trim: true
+    },
+    pincode: {
+      type: String,
+      trim: true,
+      match: [/^[0-9]{6}$/, 'Please enter a valid 6-digit pincode']
+    },
+    village: {
+      type: String,
+      trim: true
+    },
+    taluk: {
+      type: String,
+      trim: true
+    }
+  },
+  
+  // Educational Background
+  education: {
+    qualification: {
+      type: String,
+      trim: true
+    },
+    collegeOrSchool: {
+      type: String,
+      trim: true
+    }
+  },
+  
+  // Work Experience
+  workExperience: {
+    hasExperience: {
+      type: Boolean,
+      default: false
+    },
+    companyName: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    designation: {
+      type: String,
+      trim: true,
+      default: ''
+    }
+  },
+  
+  // Legacy fields for backward compatibility
+  parentName: {
+    type: String,
+    trim: true
+  },
+  
+  // Academic tracking
+  pointTracker: {
+    week1: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week2: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week3: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week4: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week5: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week6: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week7: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    week8: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    }
+  },
+  
+  // Weekly reviews
+  review: {
+    reviewWeek1: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek2: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek3: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek4: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek5: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek6: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek7: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    reviewWeek8: {
+      type: String,
+      default: '',
+      trim: true
+    }
+  },
+  
+  // Participation tracking
+  participation: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  
+  // LinkedIn profile management
+  linkedinPlanner: {
+    profileCreation: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    connections: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    posts: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    networking: {
+      type: String,
+      default: '',
+      trim: true
+    }
+  },
+  
+  // Communication skills
+  communication: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  
+  // Attendance tracking
+  attendance: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  
+  // Presentation skills
+  presentation: {
+    topic: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    score: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    feedback: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    date: {
+      type: Date,
+      default: null
+    }
+  },
+  
+  // Additional student fields
+  registerNumber: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows null values but ensures uniqueness when present
+    trim: true
+  },
+  
+  course: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  
+  semester: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  
+  batch: {
+    type: String,
+    default: '',
+    trim: true
   }
 }, {
   timestamps: true

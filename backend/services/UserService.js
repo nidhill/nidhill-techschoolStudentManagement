@@ -37,6 +37,14 @@ class UserService {
     return await UserRepository.findById(id);
   }
 
+  static async findByIdWithPassword(id) {
+    return await UserRepository.findByIdWithPassword(id);
+  }
+
+  static async updatePassword(id, hashedPassword) {
+    return await UserRepository.updatePassword(id, hashedPassword);
+  }
+
   static async getAllUsers() {
     return await UserRepository.findAll();
   }
@@ -60,6 +68,19 @@ class UserService {
       activeUsersChange: '-5%',
       recentUsersChange: '+20%'
     };
+  }
+
+  // New methods for SHO functionality
+  static async findByAssignedSho(shoId) {
+    return await UserRepository.findByAssignedSho(shoId);
+  }
+
+  static async findByRegisterNumber(registerNumber) {
+    return await UserRepository.findByRegisterNumber(registerNumber);
+  }
+
+  static getUserModel() {
+    return require('../models/User');
   }
 }
 

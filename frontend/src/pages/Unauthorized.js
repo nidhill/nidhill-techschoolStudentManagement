@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Unauthorized = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 py-12 px-4 sm:px-6 lg:px-8">
@@ -19,11 +21,25 @@ const Unauthorized = () => {
           <p className="mt-2 text-sm text-gray-300">
             You don't have permission to access this page.
           </p>
+          {user && (
+            <p className="mt-1 text-xs text-gray-400">
+              Current role: {user.role}
+            </p>
+          )}
         </div>
         
         <div className="mt-8 space-y-4">
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => {
+              // Navigate to appropriate login page based on user role or default to admin
+              if (user?.role === 'sho') {
+                navigate('/loginsho');
+              } else if (user?.role === 'student') {
+                navigate('/loginstudent');
+              } else {
+                navigate('/loginadmin');
+              }
+            }}
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-800 transition duration-200"
           >
             Go to Login
@@ -34,6 +50,16 @@ const Unauthorized = () => {
             className="group relative w-full flex justify-center py-3 px-4 border border-gray-600 text-sm font-medium rounded-lg text-gray-300 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-800 transition duration-200"
           >
             Go Back
+          </button>
+          
+          <button
+            onClick={() => {
+              logout();
+              navigate('/loginadmin');
+            }}
+            className="group relative w-full flex justify-center py-3 px-4 border border-red-600 text-sm font-medium rounded-lg text-red-300 bg-red-700 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-800 transition duration-200"
+          >
+            Logout & Clear Session
           </button>
         </div>
       </div>

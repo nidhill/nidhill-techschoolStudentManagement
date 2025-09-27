@@ -5,6 +5,8 @@ require('dotenv').config({ path: './config.env' });
 
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
+const profileRoutes = require('./routes/profile');
+const shoRoutes = require('./routes/sho');
 
 const app = express();
 
@@ -17,11 +19,33 @@ app.use('/uploads', express.static('uploads'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+  res.json({ status: 'ok' });
+});
+
+// Test database connection endpoint
+app.get('/test/db', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    const userCount = await User.countDocuments();
+    const adminUser = await User.findOne({ username: 'admin' });
+    const allUsers = await User.find({}, 'username role email');
+    
+    res.json({ 
+      success: true, 
+      message: 'Database connected successfully',
+      userCount: userCount,
+      adminExists: adminUser ? true : false,
+      adminDetails: adminUser ? { username: adminUser.username, role: adminUser.role, email: adminUser.email } : null,
+      allUsers: allUsers,
+      dbName: mongoose.connection.db.databaseName
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: 'Database connection failed',
+      error: error.message 
+    });
+  }
 });
 
 // Test endpoint for SHO creation (no auth required)
@@ -76,96 +100,11 @@ app.post('/test/sho', async (req, res) => {
   }
 });
 
-// Mock login endpoint for testing (when MongoDB is not available) - DISABLED FOR PRODUCTION
-// app.post('/api/auth/login', (req, res) => {
-//   const { username, password } = req.body;
-//   
-//   console.log('Login attempt:', { username, password: '***' });
-//   
-//       // Mock authentication for testing
-//       if (username === 'admin' && password === 'Admin@2024!') {
-//         res.json({
-//           token: 'mock-jwt-token-12345',
-//           user: {
-//             id: '1',
-//             username: 'admin',
-//             role: 'admin'
-//           }
-//         });
-//       } else if (username === 'testsho' && password === 'Sho@2024!') {
-//         res.json({
-//           token: 'mock-jwt-token-67890',
-//           user: {
-//             id: '2',
-//             username: 'testsho',
-//             role: 'sho'
-//           }
-//         });
-//       } else if (username === 'student' && password === 'Student@2024!') {
-//         res.json({
-//           token: 'mock-jwt-token-99999',
-//           user: {
-//             id: '3',
-//             username: 'student',
-//             role: 'student'
-//           }
-//         });
-//       } else {
-//         res.status(400).json({ message: 'Invalid credentials' });
-//       }
-// });
-
-// Mock /auth/me endpoint for testing - DISABLED FOR PRODUCTION
-// app.get('/api/auth/me', (req, res) => {
-//   console.log('Backend: /auth/me endpoint called');
-//   const authHeader = req.headers.authorization;
-//   console.log('Backend: Authorization header:', authHeader);
-//   
-//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-//     console.log('Backend: No valid authorization header');
-//     return res.status(401).json({ message: 'No token provided' });
-//   }
-//   
-//   const token = authHeader.split(' ')[1];
-//   console.log('Backend: Token:', token);
-//   
-//   // Mock token validation
-//   if (token === 'mock-jwt-token-12345') {
-//     console.log('Backend: Valid admin token, returning admin user');
-//     res.json({
-//       user: {
-//         id: '1',
-//         username: 'admin',
-//         role: 'admin'
-//       }
-//     });
-//   } else if (token === 'mock-jwt-token-67890') {
-//     console.log('Backend: Valid SHO token, returning SHO user');
-//     res.json({
-//       user: {
-//         id: '2',
-//         username: 'testsho',
-//         role: 'sho'
-//       }
-//     });
-//   } else if (token === 'mock-jwt-token-99999') {
-//     console.log('Backend: Valid student token, returning student user');
-//     res.json({
-//       user: {
-//         id: '3',
-//         username: 'student',
-//         role: 'student'
-//       }
-//     });
-//   } else {
-//     console.log('Backend: Invalid token');
-//     res.status(401).json({ message: 'Invalid token' });
-//   }
-// });
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/sho', shoRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

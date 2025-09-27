@@ -112,21 +112,6 @@ class AdminController {
     }
   }
 
-  static async bulkDeleteShos(ids) {
-    try {
-      const promises = ids.map(id => api.delete(`/admin/shos/${id}`));
-      await Promise.all(promises);
-      return {
-        success: true,
-        data: { message: `${ids.length} SHOs deleted successfully` }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || error.message || 'Failed to delete SHOs'
-      };
-    }
-  }
 
   static async toggleShoStatus(id, isActive) {
     try {
@@ -175,6 +160,21 @@ class AdminController {
       return {
         success: false,
         error: error.message || 'Failed to export SHOs'
+      };
+    }
+  }
+
+  static async getStudentsForSho(shoId) {
+    try {
+      const response = await api.get(`/admin/shos/${shoId}/students`);
+      return {
+        success: true,
+        data: response.data.data || []
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || 'Failed to fetch students for SHO'
       };
     }
   }

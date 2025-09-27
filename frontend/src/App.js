@@ -2,10 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Login from './pages/Login';
+import UnifiedLogin from './pages/UnifiedLogin';
+import ForgotPassword from './pages/ForgotPassword';
+import PasswordReset from './pages/PasswordReset';
+import EmailVerification from './pages/EmailVerification';
 import AdminDashboard from './pages/AdminDashboard';
 import SHODashboard from './pages/SHODashboard';
-import StudentDashboard from './pages/StudentDashboard';
+import StudentDetailPage from './pages/StudentDetailPage';
+import ShoDetailPage from './pages/ShoDetailPage';
 import Unauthorized from './pages/Unauthorized';
 
 function App() {
@@ -14,16 +18,19 @@ function App() {
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <div className="App">
           <Routes>
-            {/* Public Login Routes */}
-            <Route path="/loginadmin" element={<Login portalType="admin" />} />
-            <Route path="/loginsho" element={<Login portalType="sho" />} />
-            <Route path="/loginstudent" element={<Login portalType="student" />} />
+            {/* Public Routes */}
+            <Route path="/login" element={<UnifiedLogin />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<PasswordReset />} />
+            <Route path="/verify-email/:token" element={<EmailVerification />} />
             
             {/* Legacy Route Redirects */}
-            <Route path="/admin" element={<Navigate to="/loginadmin" replace />} />
-            <Route path="/sho" element={<Navigate to="/loginsho" replace />} />
-            <Route path="/student" element={<Navigate to="/loginstudent" replace />} />
-            <Route path="/login" element={<Navigate to="/loginadmin" replace />} />
+            <Route path="/loginadmin" element={<Navigate to="/login" replace />} />
+            <Route path="/loginsho" element={<Navigate to="/login" replace />} />
+            <Route path="/loginstudent" element={<Navigate to="/login" replace />} />
+            <Route path="/admin" element={<Navigate to="/login" replace />} />
+            <Route path="/sho" element={<Navigate to="/login" replace />} />
+            <Route path="/student" element={<Navigate to="/login" replace />} />
             
             {/* Error Routes */}
             <Route path="/unauthorized" element={<Unauthorized />} />
@@ -38,6 +45,14 @@ function App() {
               } 
             />
             <Route 
+              path="/admin/sho/:shoId" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <ShoDetailPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/sho/dashboard" 
               element={
                 <ProtectedRoute requiredRole="sho">
@@ -46,17 +61,17 @@ function App() {
               } 
             />
             <Route 
-              path="/student/dashboard" 
+              path="/sho/student/:studentId" 
               element={
-                <ProtectedRoute requiredRole="student">
-                  <StudentDashboard />
+                <ProtectedRoute requiredRole="sho">
+                  <StudentDetailPage />
                 </ProtectedRoute>
-              } 
+              }
             />
             
             {/* Root and Catch-all Routes */}
-            <Route path="/" element={<Navigate to="/loginadmin" replace />} />
-            <Route path="*" element={<Navigate to="/loginadmin" replace />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
       </Router>
