@@ -25,6 +25,10 @@ class UserService {
     return await UserRepository.create(userData);
   }
 
+  static async updateStudentById(id, updateData) {
+    return await UserRepository.updateStudentById(id, updateData);
+  }
+
   static async updateById(id, updateData) {
     return await UserRepository.updateById(id, updateData);
   }

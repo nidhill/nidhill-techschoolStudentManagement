@@ -20,7 +20,7 @@ const PasswordReset = () => {
     const verifyToken = async () => {
       try {
         setCheckingToken(true);
-        const response = await fetch(`/api/auth/verify-reset-token/${token}`);
+        const response = await fetch(`http://localhost:8000/api/auth/verify-reset-token/${token}`);
         
         if (response.ok) {
           setTokenValid(true);
@@ -80,7 +80,7 @@ const PasswordReset = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/auth/reset-password/${token}`, {
+      const response = await fetch(`http://localhost:8000/api/auth/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

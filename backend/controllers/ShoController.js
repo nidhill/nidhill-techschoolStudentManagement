@@ -127,6 +127,7 @@ class ShoController {
         dateOfBirth: new Date(dateOfBirth),
         age: parseInt(age),
         gender,
+        isEmailVerified: false, // Students can have unverified emails
         parentDetails: {
           fatherName: parentDetails.fatherName,
           fatherContact: parentDetails.fatherContact,
@@ -281,6 +282,7 @@ class ShoController {
         parentName: student.parentName,
         assignedSho: student.assignedSho,
         isActive: student.isActive,
+        photo: student.photo, // Include photo field
         createdAt: student.createdAt,
         updatedAt: student.updatedAt,
         // Include summary of tracking data
@@ -442,6 +444,7 @@ class ShoController {
             message: 'Email already exists'
           });
         }
+        // Students can have unverified emails - no need to force verification
       }
 
       // Check for duplicate register number if register number is being updated
@@ -465,8 +468,8 @@ class ShoController {
         updateData.age = parseInt(updateData.age);
       }
 
-      // Update the student
-      const updatedStudent = await UserService.updateById(id, updateData);
+      // Update the student using the student-specific method that bypasses validation
+      const updatedStudent = await UserService.updateStudentById(id, updateData);
 
       if (!updatedStudent) {
         return res.status(500).json({
@@ -738,8 +741,8 @@ class ShoController {
         });
       }
 
-      // Update the student
-      const updatedStudent = await UserService.updateById(id, filteredUpdateData);
+      // Update the student using the student-specific method that bypasses validation
+      const updatedStudent = await UserService.updateStudentById(id, filteredUpdateData);
 
       if (!updatedStudent) {
         return res.status(500).json({

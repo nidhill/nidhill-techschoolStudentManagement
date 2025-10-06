@@ -62,7 +62,8 @@ class AdminController {
         fullName,
         email,
         mobileNumber,
-        role: 'sho'
+        role: 'sho',
+        isEmailVerified: true // Admin-created SHOs are pre-verified
       };
 
       // Add photo path if uploaded
@@ -177,7 +178,8 @@ class AdminController {
         username: finalUsername, 
         fullName, 
         email, 
-        mobileNumber 
+        mobileNumber,
+        isEmailVerified: true // Admin-updated emails remain verified
       };
       
       if (password) {
@@ -517,6 +519,7 @@ class AdminController {
         gender,
         dateOfBirth: new Date(dateOfBirth),
         assignedSho,
+        isEmailVerified: false, // Students can have unverified emails
         pointTracker: { week1:0, week2:0, week3:0, week4:0, week5:0, week6:0, week7:0, week8:0 },
         review: { reviewWeek1:'',reviewWeek2:'',reviewWeek3:'',reviewWeek4:'',reviewWeek5:'',reviewWeek6:'',reviewWeek7:'',reviewWeek8:'' },
         linkedinPlanner: { profileCreation:'', connections:'', posts:'', networking:'' },

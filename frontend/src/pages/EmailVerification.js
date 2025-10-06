@@ -14,12 +14,17 @@ const EmailVerification = () => {
     const verifyEmail = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/auth/verify-email/${token}`);
+        const response = await fetch(`http://localhost:8000/api/auth/verify-email/${token}`);
         const data = await response.json();
         
         if (response.ok) {
           setSuccess(true);
           setError('');
+          
+          // Handle already verified case
+          if (data.alreadyVerified) {
+            setError('Email was already verified successfully.');
+          }
         } else {
           setError(data.message || 'Email verification failed');
           setSuccess(false);
@@ -88,7 +93,9 @@ const EmailVerification = () => {
           <p className="mt-2 text-center text-sm text-gray-600">
             {success 
               ? 'Your email address has been verified and updated successfully.'
-              : error || 'There was a problem verifying your email address.'
+              : error === 'Token is invalid or has expired' 
+                ? 'This verification link has expired or is invalid. Please request a new verification email.'
+                : error || 'There was a problem verifying your email address.'
             }
           </p>
         </div>
@@ -100,6 +107,20 @@ const EmailVerification = () => {
           >
             {success ? 'Continue to Login' : 'Back to Login'}
           </button>
+          
+          {!success && error === 'Token is invalid or has expired' && (
+            <div className="mt-4">
+              <p className="text-sm text-gray-600 mb-3">
+                Need a new verification email?
+              </p>
+              <button
+                onClick={() => navigate('/login')}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+              >
+                Request New Verification Email
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

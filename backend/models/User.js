@@ -32,7 +32,18 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please enter a valid email']
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please enter a valid email'],
+    validate: {
+      validator: function(email) {
+        // Allow admin users to have unverified emails (for initial setup)
+        if (this.role === 'admin') return true;
+        // Allow students to have unverified emails
+        if (this.role === 'student') return true;
+        // For SHO users, email must be verified
+        return this.isEmailVerified === true;
+      },
+      message: 'Email must be verified before saving to database'
+    }
   },
   mobileNumber: {
     type: String,
@@ -99,6 +110,20 @@ const userSchema = new mongoose.Schema({
   pendingEmail: {
     type: String,
     default: undefined
+  },
+  
+  // OTP fields for password reset
+  otpCode: {
+    type: String,
+    default: undefined
+  },
+  otpExpires: {
+    type: Date,
+    default: undefined
+  },
+  otpAttempts: {
+    type: Number,
+    default: 0
   },
   
   // Student-specific fields
@@ -435,6 +460,27 @@ userSchema.pre('save', async function(next) {
   } catch (error) {
     next(error);
   }
+});
+
+// Enforce email verification before saving
+userSchema.pre('save', async function(next) {
+  // Skip validation for admin users (they can have unverified emails)
+  if (this.role === 'admin') return next();
+  
+  // Skip validation for students (they can have unverified emails)
+  if (this.role === 'student') return next();
+  
+  // If email is being modified and user is SHO
+  if (this.isModified('email') && this.role === 'sho') {
+    // Check if email is verified
+    if (!this.isEmailVerified) {
+      const error = new Error('Email must be verified before saving to database');
+      error.name = 'ValidationError';
+      return next(error);
+    }
+  }
+  
+  next();
 });
 
 // Compare password method

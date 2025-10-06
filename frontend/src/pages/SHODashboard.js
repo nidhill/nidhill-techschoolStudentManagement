@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { getShoStudents, createStudent, changeMyPassword, getAttendanceForDate, saveAttendanceForDate, updateMyProfile as updateMyProfileApi } from '../services/api';
+import EmailLinking from '../components/EmailLinking';
 
 const SHODashboard = () => {
   const { user, logout, updateProfile, refreshAuth } = useAuth();
@@ -818,7 +819,7 @@ const SHODashboard = () => {
         {/* Branding */}
         <div className="mb-12">
           <div className="flex items-center space-x-3">
-            <img src="/logo-techschool.png" onError={(e)=>{ e.currentTarget.onerror=null; e.currentTarget.src='/logo-techschool.svg'; }} alt="Tech School" className="h-8" />
+            <img src="https://i.postimg.cc/qqGCCxTY/Gemini-Generated-Image-fjxk9ifjxk9ifjxk.png" alt="Tech School" className="h-10 w-auto" />
           </div>
         </div>
 
@@ -890,6 +891,12 @@ const SHODashboard = () => {
                   className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
                 >
                   Settings
+                </button>
+                <button
+                  onClick={() => { setActiveTab('email'); setShowProfileMenu(false); }}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
+                >
+                  Email Settings
                 </button>
                 <button
                   onClick={() => { avatarInputRef.current?.click(); setShowProfileMenu(false); }}
@@ -1149,12 +1156,23 @@ const SHODashboard = () => {
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-300">
                           {student.photo ? (
-                            <img src={student.photo} alt={student.fullName || 'Student'} className="w-full h-full object-cover" />
-                          ) : (
-                          <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-600">
+                            <img 
+                              src={student.photo} 
+                              alt={student.fullName || 'Student'} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                console.log('Image failed to load:', student.photo);
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div 
+                            className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-600"
+                            style={{ display: student.photo ? 'none' : 'flex' }}
+                          >
                             {(student.name || student.fullName || 'S').charAt(0).toUpperCase()}
                           </div>
-                          )}
                         </div>
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                               student.isActive !== false 
@@ -1460,8 +1478,23 @@ const SHODashboard = () => {
                   <div key={student.id || index} className="bg-white rounded-lg shadow-md border border-gray-200 p-4 hover:shadow-lg transition-shadow">
                     {/* Profile Picture */}
                     <div className="flex justify-center mb-3">
-                      <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300">
-                        <span className="text-xl font-bold text-gray-600">
+                      <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300 overflow-hidden">
+                        {student.photo ? (
+                          <img 
+                            src={student.photo} 
+                            alt={student.fullName || 'Student'} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.log('Attendance modal - Image failed to load:', student.photo);
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <span 
+                          className="text-xl font-bold text-gray-600"
+                          style={{ display: student.photo ? 'none' : 'flex' }}
+                        >
                           {(student.name || student.fullName || 'S').charAt(0).toUpperCase()}
                         </span>
                       </div>
@@ -2138,6 +2171,25 @@ const SHODashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Email Settings Tab */}
+        {activeTab === 'email' && (
+          <div className="mt-8">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">Email Settings</h1>
+              <p className="text-gray-600">Link email address to your account for password reset</p>
+            </div>
+            
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+              <EmailLinking 
+                user={user} 
+                onEmailLinked={(email) => {
+                  setSuccess(`Email ${email} linked successfully! Please check your email for verification.`);
+                }}
+              />
+            </div>
+          </div>
+        )}
 
       {/* Batch Entry Modal removed as requested */}
 

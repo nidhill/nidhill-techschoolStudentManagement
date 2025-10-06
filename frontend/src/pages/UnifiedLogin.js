@@ -65,7 +65,7 @@ const UnifiedLogin = () => {
     try {
       const result = await login(formData.username.trim(), formData.password);
       
-      if (result.success) {
+      if (result.success && result.user) {
         // Redirect based on user role
         const dashboardPath = `/${result.user.role}/dashboard`;
         navigate(dashboardPath, { replace: true });
@@ -73,6 +73,7 @@ const UnifiedLogin = () => {
         setError(result.message || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
+      console.error('Login error:', error);
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -85,10 +86,9 @@ const UnifiedLogin = () => {
         {/* Header */}
         <div className="text-center">
           <img
-            src="/logo-techschool.png"
-            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo-techschool.svg'; }}
+            src="https://i.postimg.cc/qqGCCxTY/Gemini-Generated-Image-fjxk9ifjxk9ifjxk.png"
             alt="Tech School"
-            className="h-12 mx-auto"
+            className="h-16 w-auto mx-auto"
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Tech School Portal
@@ -178,9 +178,9 @@ const UnifiedLogin = () => {
               <button
                 type="button"
                 onClick={() => navigate('/forgot-password')}
-                className="text-sm text-blue-600 hover:text-blue-800 underline"
+                className="text-sm text-black hover:text-gray-800 underline block"
               >
-                Forgot your password?
+                Forgot password
               </button>
             </div>
           </form>

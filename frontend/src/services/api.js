@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000/api',
 });
 
 // Add token to requests
@@ -284,6 +284,39 @@ export const sendEmailVerification = async (payload) => {
     return response.data;
   } catch (error) {
     console.error('Error sending email verification:', error);
+    throw error;
+  }
+};
+
+// Send OTP for password reset
+export const sendOTPReset = async (email) => {
+  try {
+    const response = await api.post('/auth/send-otp-reset', { email });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending OTP reset:', error);
+    throw error;
+  }
+};
+
+// Verify OTP and reset password
+export const verifyOTPReset = async (email, otp, newPassword) => {
+  try {
+    const response = await api.post('/auth/verify-otp-reset', { email, otp, newPassword });
+    return response.data;
+  } catch (error) {
+    console.error('Error verifying OTP reset:', error);
+    throw error;
+  }
+};
+
+// Link email to account
+export const linkEmail = async (email, password) => {
+  try {
+    const response = await api.post('/auth/link-email', { email, password });
+    return response.data;
+  } catch (error) {
+    console.error('Error linking email:', error);
     throw error;
   }
 };

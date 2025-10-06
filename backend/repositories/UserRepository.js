@@ -26,7 +26,28 @@ class UserRepository {
     return await user.save();
   }
 
+  static async updateStudentById(id, updateData) {
+    // For student updates, skip all validators
+    return await User.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: false }
+    ).select('-password');
+  }
+
   static async updateById(id, updateData) {
+    // Check if this is a student update to skip email validation
+    const user = await User.findById(id);
+    if (user && user.role === 'student') {
+      // For students, skip email validation
+      return await User.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: false }
+      ).select('-password');
+    }
+    
+    // For other users, run normal validation
     return await User.findByIdAndUpdate(
       id,
       updateData,

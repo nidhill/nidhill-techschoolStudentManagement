@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import UnifiedLogin from './pages/UnifiedLogin';
 import ForgotPassword from './pages/ForgotPassword';
 import PasswordReset from './pages/PasswordReset';
+import OTPPasswordReset from './pages/OTPPasswordReset';
 import EmailVerification from './pages/EmailVerification';
 import AdminDashboard from './pages/AdminDashboard';
 import SHODashboard from './pages/SHODashboard';
@@ -22,6 +23,7 @@ function App() {
             <Route path="/login" element={<UnifiedLogin />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<PasswordReset />} />
+            <Route path="/otp-reset" element={<OTPPasswordReset />} />
             <Route path="/verify-email/:token" element={<EmailVerification />} />
             
             {/* Legacy Route Redirects */}

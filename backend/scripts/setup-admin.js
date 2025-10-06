@@ -5,7 +5,7 @@ require('dotenv').config({ path: './config.env' });
 async function setupAdmin() {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/student-dashboard');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/student-dashboard');
     console.log('Connected to MongoDB');
 
     // Clear all existing users
@@ -19,7 +19,7 @@ async function setupAdmin() {
       username: 'admin',
       password: 'techschool', // This will be automatically hashed by the pre-save hook
       fullName: 'Admin User',
-      email: 'admin@techschool.com',
+      email: process.env.EMAIL_USER || 'admin@techschool.com',
       mobileNumber: '1234567890',
       role: 'admin',
       isActive: true,

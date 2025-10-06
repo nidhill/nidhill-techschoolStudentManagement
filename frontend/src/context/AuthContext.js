@@ -114,6 +114,54 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUserData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return false;
+      
+      // Get fresh user data from server
+      const response = await api.get('/auth/me');
+      const userData = response.data.user;
+      
+      if (userData) {
+        // Update localStorage with fresh data
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+      return false;
+    }
+  };
+
+  const forceRefreshUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return false;
+      
+      // Clear current user data
+      setUser(null);
+      
+      // Get fresh user data from server
+      const response = await api.get('/auth/me');
+      const userData = response.data.user;
+      
+      if (userData) {
+        // Update localStorage with fresh data
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        console.log('User data refreshed:', userData);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+      return false;
+    }
+  };
+
   const value = {
     user,
     login,
@@ -121,7 +169,9 @@ export const AuthProvider = ({ children }) => {
     loading,
     isAuthenticated,
     refreshAuth,
-    updateProfile
+    updateProfile,
+    refreshUserData,
+    forceRefreshUser
   };
 
   return (

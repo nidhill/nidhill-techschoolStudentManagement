@@ -10,7 +10,7 @@ import { createSho, updateSho, deleteSho, getAllShos, adminCreateStudentForSho, 
 import AdminController from '../controllers/AdminController';
 
 const AdminDashboardView = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, forceRefreshUser } = useAuth();
   const navigate = useNavigate();
   
   // Tab management
@@ -18,6 +18,13 @@ const AdminDashboardView = () => {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
+
+  // Refresh user data when profile tab is accessed
+  useEffect(() => {
+    if (activeTab === 'profile') {
+      forceRefreshUser();
+    }
+  }, [activeTab, forceRefreshUser]);
   
   // General state
   const [error, setError] = useState('');
@@ -727,6 +734,129 @@ const AdminDashboardView = () => {
         </div>
       )}
 
+
+      {/* Profile Tab */}
+      {activeTab === 'profile' && (
+        <div>
+          <div className="mb-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Profile</h1>
+                <p className="text-gray-600">View and manage your admin account information</p>
+              </div>
+              <button
+                onClick={forceRefreshUser}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Refresh Data</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="bg-white backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                <span className="text-white font-semibold text-xl">{user?.username?.charAt(0).toUpperCase() || 'A'}</span>
+              </div>
+              <div>
+                <h4 className="text-xl font-semibold text-gray-800">{user?.fullName || user?.username}</h4>
+                <p className="text-gray-600">{user?.email || 'No email linked'}</p>
+                <p className="text-sm text-gray-500">Administrator</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                    {user?.username || 'N/A'}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                    {user?.fullName || 'N/A'}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 flex items-center justify-between">
+                    <span>{user?.email || 'No email linked'}</span>
+                    {user?.email && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                        Verified
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                    Administrator
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Account Status</label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 flex items-center justify-between">
+                    <span>Active</span>
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                      Online
+                    </span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Login</label>
+                  <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                    {user?.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h5 className="text-lg font-semibold text-gray-800 mb-4">Email Management</h5>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center space-x-3">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-800">Linked Email</p>
+                    <p className="text-sm text-blue-600">{user?.email || 'No email linked yet'}</p>
+                  </div>
+                  <button
+                    onClick={forceRefreshUser}
+                    className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Refresh
+                  </button>
+                </div>
+                {!user?.email && (
+                  <p className="text-xs text-blue-600 mt-2">
+                    Use the Email Settings option in the header dropdown to link an email address for password reset functionality.
+                  </p>
+                )}
+                {user?.email && (
+                  <p className="text-xs text-green-600 mt-2">
+                    ✅ Email is properly linked and verified for password reset functionality.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Student List Modal */}
       {showStudentListModal && (

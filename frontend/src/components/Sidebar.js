@@ -32,6 +32,16 @@ const Sidebar = ({ activeTab, onTabChange }) => {
       tab: 'shos',
       active: activeTab === 'shos'
     },
+    {
+      name: 'Profile',
+      icon: (
+        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+        </svg>
+      ),
+      tab: 'profile',
+      active: activeTab === 'profile'
+    },
   ];
 
   return (
@@ -39,7 +49,7 @@ const Sidebar = ({ activeTab, onTabChange }) => {
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
-          <img src="/logo-techschool.png" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo-techschool.svg'; }} alt="Tech School" className="h-6" />
+          <img src="https://i.postimg.cc/qqGCCxTY/Gemini-Generated-Image-fjxk9ifjxk9ifjxk.png" alt="Tech School" className="h-8 w-auto" />
           <span className="text-xl font-bold text-gray-800">Tech School Admin</span>
         </div>
       </div>

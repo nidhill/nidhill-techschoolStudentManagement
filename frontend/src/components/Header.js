@@ -4,7 +4,7 @@ import { sendEmailVerification } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const Header = ({ onTabChange }) => {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, logout, updateProfile, refreshUserData } = useAuth();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(user?.photoUrl || null);
@@ -76,6 +76,7 @@ const Header = ({ onTabChange }) => {
   const openEmailModal = () => {
     setShowEmailModal(true);
     setIsDropdownOpen(false);
+    refreshUserData(); // Refresh user data to get latest email
     setEmailData({
       email: user?.email || '',
       password: ''
@@ -208,6 +209,7 @@ const Header = ({ onTabChange }) => {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-gray-800">{user?.fullName || user?.username}</span>
+                      <span className="text-xs text-gray-500">{user?.email || 'No email linked'}</span>
                       <span className="text-xs text-gray-500">Administrator</span>
                     </div>
                   </div>

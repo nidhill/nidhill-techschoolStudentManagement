@@ -7,17 +7,20 @@ class ProfileController {
       const { fullName, email } = req.body;
       const userId = req.user.id; // ID of the logged-in user
 
-      if (!fullName || !email) {
-        return res.status(400).json({ message: 'Full name and email are required' });
+      if (!fullName) {
+        return res.status(400).json({ message: 'Full name is required' });
       }
 
-      // Check if email already exists for another user
-      const existingEmailUser = await UserService.findByEmailExcludingId(email, userId);
-      if (existingEmailUser) {
-        return res.status(400).json({ message: 'Email already in use by another account' });
+      // STRICT EMAIL VERIFICATION: Prevent direct email updates
+      if (email) {
+        return res.status(400).json({ 
+          message: 'Email cannot be updated directly. Please use the email verification process to change your email address.',
+          requiresEmailVerification: true
+        });
       }
 
-      const updatedUser = await UserService.updateById(userId, { fullName, email });
+      // Only update fullName (email updates require verification)
+      const updatedUser = await UserService.updateById(userId, { fullName });
 
       if (!updatedUser) {
         return res.status(404).json({ message: 'User not found' });
