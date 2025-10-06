@@ -106,6 +106,23 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/sho', shoRoutes);
 
+// Root route - friendly welcome message
+app.get('/', (req, res) => {
+  res.json({
+    message: '✅ Student Management Backend is running successfully!',
+    status: 'active',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      admin: '/api/admin',
+      profile: '/api/profile',
+      sho: '/api/sho'
+    }
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
